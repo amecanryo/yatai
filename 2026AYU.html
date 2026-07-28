@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>屋台 注文計算</title>
+
+<style>
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px 15px;
+    background: #fff;
+    color: #000;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.item-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+
+.item-name {
+    font-size: 28px;
+}
+
+.qty {
+    min-width: 30px;
+    text-align: center;
+    font-size: 28px;
+}
+
+.btn {
+    width: 56px;
+    height: 56px;
+    font-size: 36px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.btn:active {
+    background: #eee;
+}
+
+.summary {
+    margin-top: 40px;
+}
+
+.summary-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.summary-label {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.summary-value {
+    font-size: 24px;
+}
+
+input[type="number"] {
+    width: 120px;
+    font-size: 24px;
+    padding: 6px;
+}
+
+.clear-btn {
+    margin-top: 30px;
+    width: 140px;
+    height: 70px;
+    font-size: 24px;
+    font-weight: bold;
+    border: 2px solid #000;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.clear-btn:active {
+    background: #eee;
+}
+
+@media (max-width: 480px) {
+    .item-name {
+        font-size: 20px;
+    }
+
+    .qty {
+        font-size: 20px;
+    }
+
+    .btn {
+        width: 48px;
+        height: 48px;
+        font-size: 28px;
+    }
+
+    .summary-label,
+    .summary-value,
+    input[type="number"] {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>注文</h1>
+
+    <div class="item-row">
+        <div class="item-name">焼きそば（700）</div>
+        <button class="btn" onclick="changeQty('yakisoba',-1)">−</button>
+        <div class="qty" id="yakisoba">0</div>
+        <button class="btn" onclick="changeQty('yakisoba',1)">＋</button>
+    </div>
+
+    <div class="item-row">
+        <div class="item-name">チャーハン（500）</div>
+        <button class="btn" onclick="changeQty('chahan',-1)">−</button>
+        <div class="qty" id="chahan">0</div>
+        <button class="btn" onclick="changeQty('chahan',1)">＋</button>
+    </div>
+
+    <div class="item-row">
+        <div class="item-name">カリーブルスト（500）</div>
+        <button class="btn" onclick="changeQty('curry',-1)">−</button>
+        <div class="qty" id="curry">0</div>
+        <button class="btn" onclick="changeQty('curry',1)">＋</button>
+    </div>
+
+    <div class="item-row">
+        <div class="item-name">ビール（600）</div>
+        <button class="btn" onclick="changeQty('beer',-1)">−</button>
+        <div class="qty" id="beer">0</div>
+        <button class="btn" onclick="changeQty('beer',1)">＋</button>
+    </div>
+
+    <div class="summary">
+
+        <div class="summary-row">
+            <div class="summary-label">合計</div>
+            <div class="summary-value" id="total">0</div>
+        </div>
+
+        <div class="summary-row">
+            <div class="summary-label">預かり金</div>
+            <div>
+                <input
+                    type="number"
+                    id="received"
+                    value="0"
+                    min="0"
+                    oninput="calculate()">
+            </div>
+        </div>
+
+        <div class="summary-row">
+            <div class="summary-label">お釣り</div>
+            <div class="summary-value" id="change">0</div>
+        </div>
+
+    </div>
+
+    <button class="clear-btn" onclick="clearAll()">クリア</button>
+
+</div>
+
+<script>
+const prices = {
+    yakisoba: 700,
+    chahan: 500,
+    curry: 500,
+    beer: 600
+};
+
+function changeQty(id, diff) {
+
+    let elem = document.getElementById(id);
+    let qty = parseInt(elem.textContent);
+
+    qty += diff;
+
+    if (qty < 0) {
+        qty = 0;
+    }
+
+    elem.textContent = qty;
+
+    calculate();
+}
+
+function calculate() {
+
+    let total = 0;
+
+    for (const id in prices) {
+        const qty = parseInt(document.getElementById(id).textContent);
+        total += qty * prices[id];
+    }
+
+    document.getElementById("total").textContent = total;
+
+    const received =
+        parseInt(document.getElementById("received").value) || 0;
+
+    document.getElementById("change").textContent =
+        received - total;
+}
+
+function clearAll() {
+
+    for (const id in prices) {
+        document.getElementById(id).textContent = 0;
+    }
+
+    document.getElementById("received").value = 0;
+
+    calculate();
+}
+
+calculate();
+</script>
+
+</body>
+</html>
